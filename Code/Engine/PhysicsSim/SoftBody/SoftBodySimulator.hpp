@@ -28,7 +28,7 @@ private:
 	void SolveDistanceConstraints(std::vector<float>& lambdas, float compliance) const;
 
 	inline float GetVolumeConstraint() const;
-	void SolveVolumeConstraint() const;
+	void SolveVolumeConstraint(float& volumeLambda, float compliance) const;
 
 private:
 	Renderer& m_renderer;
@@ -39,4 +39,7 @@ private:
 	//Distance Constraint related
 	float m_inverseDistanceStiffness = 0.0010f;
 	bool m_isUsingDistraintConstraints = true;
+
+	//Volume Constraint related
+	float m_inverseVolumeStiffness = 0.0010f;
 };
