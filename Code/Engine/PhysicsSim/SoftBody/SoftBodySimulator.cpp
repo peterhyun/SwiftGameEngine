@@ -24,32 +24,11 @@ void SoftBodySimulator::Update()
 	}
 
 	//2. Initialize solve and multipliers
-	float compliance = m_inverseDistanceStiffness / (timeStepSquare);
+	float distanceCompliance = m_inverseDistanceStiffness / (timeStepSquare);
 
 	//3. Solver iterations
 	for (unsigned int solverIter = 0; solverIter < m_solverIterations; solverIter++) {
-		for (int edgeIdx = 0; edgeIdx < m_softBody.m_edges.size(); edgeIdx++) { // Solve the distance constraints
-			const auto& edge = m_softBody.m_edges[edgeIdx];
-			int idx1 = edge.m_positionIndices[0];
-			int idx2 = edge.m_positionIndices[1];
-
-			Vec3& pos1 = m_softBody.m_positions[idx1];
-			Vec3& pos2 = m_softBody.m_positions[idx2];
-
-			float distanceConstraint = GetDistanceConstraint(pos1, pos2, (float)edge.m_initialLength);
-			
-			Vec3 gradC1 = GetDistanceConstraintPartialDerivativePos1(pos1, pos2);
-			Vec3 gradC2 = -gradC1;
-
-			float effectiveMass = 1.0f + 1.0f; // Assuming mass = 1 for both particles
-			float denom = effectiveMass + compliance;
-			float deltaLambda = -(distanceConstraint + compliance * distanceLambdas[edgeIdx]) / denom;
-
-			pos1 += deltaLambda * gradC1;
-			pos2 += deltaLambda * gradC2;
-
-			distanceLambdas[edgeIdx] += deltaLambda;
-		}
+		SolveDistanceConstraints(distanceLambdas, distanceCompliance);
 	}
 
 	// Solve the ground constraints
@@ -140,4 +119,30 @@ inline Vec3 SoftBodySimulator::GetDistanceConstraintPartialDerivativePos1(const 
 {
 	float length = (pos1 - pos2).GetLength();
 	return (pos1 - pos2) / length;
+}
+
+void SoftBodySimulator::SolveDistanceConstraints(std::vector<float>& lambdas, float compliance)
+{
+	for (int edgeIdx = 0; edgeIdx < m_softBody.m_edges.size(); edgeIdx++) { // Solve the distance constraints
+		const auto& edge = m_softBody.m_edges[edgeIdx];
+		int idx1 = edge.m_positionIndices[0];
+		int idx2 = edge.m_positionIndices[1];
+
+		Vec3& pos1 = m_softBody.m_positions[idx1];
+		Vec3& pos2 = m_softBody.m_positions[idx2];
+
+		float distanceConstraint = GetDistanceConstraint(pos1, pos2, (float)edge.m_initialLength);
+
+		Vec3 gradC1 = GetDistanceConstraintPartialDerivativePos1(pos1, pos2);
+		Vec3 gradC2 = -gradC1;
+
+		float effectiveMass = 1.0f + 1.0f; // Assuming mass = 1 for both particles
+		float denom = effectiveMass + compliance;
+		float deltaLambda = -(distanceConstraint + compliance * lambdas[edgeIdx]) / denom;
+
+		pos1 += deltaLambda * gradC1;
+		pos2 += deltaLambda * gradC2;
+
+		lambdas[edgeIdx] += deltaLambda;
+	}
 }

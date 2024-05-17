@@ -190,3 +190,5 @@ Plane3D GetPlaneFromTwoLineSegments(const LineSegment3& firstSegment, const Line
 Plane3D GetPlaneFromTwoVec3sAndPoint(const Vec3& firstVec, const Vec3& secondVec, const Vec3& pointOnPlane);
 
 Vec3 GetProjectedPointOntoInfiniteLine3D(const Vec3& point, const InfiniteLine3& lineToProjectOnto);
+
+float ScalarTripleProduct(const Vec3& a, const Vec3& b, const Vec3& c);	//Order marders!!! 1/6 times becomes the tetrahedron size!

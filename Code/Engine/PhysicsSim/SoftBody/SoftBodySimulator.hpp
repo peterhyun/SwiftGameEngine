@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 class SoftBody;
 class Renderer;
 struct SoftBodyEdge;
@@ -24,6 +25,8 @@ public:
 private:
 	inline float GetDistanceConstraint(const Vec3& pos1, const Vec3& pos2, float originalDist);
 	inline Vec3 GetDistanceConstraintPartialDerivativePos1(const Vec3& pos1, const Vec3& pos2);
+	void SolveDistanceConstraints(std::vector<float>& lambdas, float compliance);
+	void SolveVolumeConstraint();
 
 private:
 	Renderer& m_renderer;

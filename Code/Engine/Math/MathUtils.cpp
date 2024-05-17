@@ -1041,6 +1041,11 @@ Vec3 GetProjectedPointOntoInfiniteLine3D(const Vec3& point, const InfiniteLine3&
 	return lineToProjectOnto.m_point + projectedOntoVec;
 }
 
+float ScalarTripleProduct(const Vec3& a, const Vec3& b, const Vec3& c)
+{
+	return DotProduct3D(CrossProduct3D(a, b), c);
+}
+
 unsigned int GetCombination(unsigned int n, unsigned int r)
 {
 	if (r > n)
