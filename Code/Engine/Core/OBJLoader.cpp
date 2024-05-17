@@ -276,7 +276,7 @@ void OBJLoader::ParseFileToSoftBody(const std::string& filePath, const Mat44& tr
 					edge.m_triangleIndices[1] = otherTriangleIdx;	//Calculate the other triangle that contains those two position indices
 				}
 			}
-			GUARANTEE_OR_DIE(foundOtherTriangle, "Check logic");
+			GUARANTEE_OR_DIE(foundOtherTriangle, "Found Other Triangle Found!");
 
 			edge.m_initialLength = ((out_softBody.m_positions[edge.m_positionIndices[0]] - out_softBody.m_positions[edge.m_positionIndices[1]]).GetLength());
 
