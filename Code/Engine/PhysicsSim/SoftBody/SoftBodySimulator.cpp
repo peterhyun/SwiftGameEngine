@@ -110,18 +110,27 @@ void SoftBodySimulator::Reset()
 	m_softBody.Reset();
 }
 
-inline float SoftBodySimulator::GetDistanceConstraint(const Vec3& pos1, const Vec3& pos2, float originalDist)
+inline float SoftBodySimulator::GetDistanceConstraint(const Vec3& pos1, const Vec3& pos2, float originalDist) const
 {
 	return (pos1 - pos2).GetLength() - originalDist;
 }
 
-inline Vec3 SoftBodySimulator::GetDistanceConstraintPartialDerivativePos1(const Vec3& pos1, const Vec3& pos2)
+inline Vec3 SoftBodySimulator::GetDistanceConstraintPartialDerivativePos1(const Vec3& pos1, const Vec3& pos2) const
 {
 	float length = (pos1 - pos2).GetLength();
 	return (pos1 - pos2) / length;
 }
 
-void SoftBodySimulator::SolveDistanceConstraints(std::vector<float>& lambdas, float compliance)
+inline float SoftBodySimulator::GetVolumeConstraint() const
+{
+	return m_softBody.CalculateVolume() - m_softBody.m_initialVolume;
+}
+
+ void SoftBodySimulator::SolveVolumeConstraint() const
+{
+}
+
+void SoftBodySimulator::SolveDistanceConstraints(std::vector<float>& lambdas, float compliance) const
 {
 	for (int edgeIdx = 0; edgeIdx < m_softBody.m_edges.size(); edgeIdx++) { // Solve the distance constraints
 		const auto& edge = m_softBody.m_edges[edgeIdx];

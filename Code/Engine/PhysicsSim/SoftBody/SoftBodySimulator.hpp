@@ -23,10 +23,12 @@ public:
 	void Reset();
 
 private:
-	inline float GetDistanceConstraint(const Vec3& pos1, const Vec3& pos2, float originalDist);
-	inline Vec3 GetDistanceConstraintPartialDerivativePos1(const Vec3& pos1, const Vec3& pos2);
-	void SolveDistanceConstraints(std::vector<float>& lambdas, float compliance);
-	void SolveVolumeConstraint();
+	inline float GetDistanceConstraint(const Vec3& pos1, const Vec3& pos2, float originalDist) const;
+	inline Vec3 GetDistanceConstraintPartialDerivativePos1(const Vec3& pos1, const Vec3& pos2) const;
+	void SolveDistanceConstraints(std::vector<float>& lambdas, float compliance) const;
+
+	inline float GetVolumeConstraint() const;
+	void SolveVolumeConstraint() const;
 
 private:
 	Renderer& m_renderer;
