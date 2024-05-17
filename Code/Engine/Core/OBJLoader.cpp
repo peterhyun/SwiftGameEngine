@@ -319,6 +319,9 @@ void OBJLoader::ParseFileToSoftBody(const std::string& filePath, const Mat44& tr
 	//Copy over the position data
 	out_softBody.m_initialPositions = out_softBody.m_positions;
 
+	//Calculate volume of mesh
+	out_softBody.m_initialVolume = out_softBody.CalculateVolume();
+
 	//Create vbo, ibo
 	out_softBody.m_vbo = rendererToUse.CreateVertexBuffer(out_softBody.m_verts.size() * sizeof(Vertex_PCUTBN), sizeof(Vertex_PCUTBN), "SoftBodyVBO");
 	out_softBody.m_ibo = rendererToUse.CreateIndexBuffer(out_softBody.m_indices.size());

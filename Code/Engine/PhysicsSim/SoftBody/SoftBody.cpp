@@ -1,6 +1,7 @@
 #include "Engine/PhysicsSim/SoftBody/SoftBody.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Math/MathUtils.hpp"
 
 void SoftBody::SetShader(Shader* shader)
 {
@@ -10,6 +11,16 @@ void SoftBody::SetShader(Shader* shader)
 void SoftBody::ToggleWireframe()
 {
 	m_isWireframe = !m_isWireframe;
+}
+
+float SoftBody::CalculateVolume() const
+{
+	float volume = 0.0f;
+	float inv_6 = 1.0f / 6.0f;
+	for (const auto& triangle : m_triangles) {
+		volume += ScalarTripleProduct(m_positions[triangle.m_positionIndices[0]], m_positions[triangle.m_positionIndices[1]], m_positions[triangle.m_positionIndices[2]]) * inv_6;
+	}
+	return volume;
 }
 
 void SoftBody::UpdateVertices(Renderer& renderer)

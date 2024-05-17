@@ -56,6 +56,7 @@ public:
 	void SetShader(Shader* shader);
 
 	void ToggleWireframe();
+	float CalculateVolume() const;
 
 private:
 	void UpdateVertices(class Renderer& renderer);
