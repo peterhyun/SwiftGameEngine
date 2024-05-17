@@ -1,6 +1,7 @@
 #include "Engine/PhysicsSim/SoftBody/SoftBody.hpp"
 #include "Engine/Renderer/Renderer.hpp"
 #include "Engine/Core/VertexUtils.hpp"
+#include "Engine/Core/ErrorWarningAssert.hpp"
 #include "Engine/Math/MathUtils.hpp"
 
 void SoftBody::SetShader(Shader* shader)
@@ -21,6 +22,17 @@ float SoftBody::CalculateVolume() const
 		volume += ScalarTripleProduct(m_positions[triangle.m_positionIndices[0]], m_positions[triangle.m_positionIndices[1]], m_positions[triangle.m_positionIndices[2]]) * inv_6;
 	}
 	return volume;
+}
+
+float SoftBody::GetPressure() const
+{
+	return m_pressure;
+}
+
+void SoftBody::SetPressure(float pressure)
+{
+	GUARANTEE_OR_DIE(pressure >= 0.0f, "pressure < 0.0f");
+	m_pressure = pressure;
 }
 
 void SoftBody::UpdateVertices(Renderer& renderer)

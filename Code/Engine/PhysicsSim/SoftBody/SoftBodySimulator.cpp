@@ -159,7 +159,7 @@ inline Vec3 SoftBodySimulator::GetDistanceConstraintPartialDerivativePos1(const 
 
 inline float SoftBodySimulator::GetVolumeConstraint() const
 {
-	return m_softBody.CalculateVolume() - m_softBody.m_initialVolume;
+	return m_softBody.CalculateVolume() - m_softBody.m_initialVolume * m_softBody.m_pressure;
 }
 
  void SoftBodySimulator::SolveVolumeConstraint(float& volumeLambda, float compliance) const

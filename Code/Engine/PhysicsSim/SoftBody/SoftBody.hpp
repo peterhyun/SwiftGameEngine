@@ -58,6 +58,9 @@ public:
 	void ToggleWireframe();
 	float CalculateVolume() const;
 
+	float GetPressure() const;
+	void SetPressure(float pressure);
+
 private:
 	void UpdateVertices(class Renderer& renderer);
 	void Reset();
@@ -81,4 +84,6 @@ private:
 
 	Shader* m_shader = nullptr;
 	bool m_isWireframe = false;
+
+	float m_pressure = 1.0f;
 };
