@@ -31,8 +31,10 @@ void SoftBodySimulator::Update()
 
 	//3. Solver iterations
 	for (unsigned int solverIter = 0; solverIter < m_solverIterations; solverIter++) {
-		SolveDistanceConstraints(distanceLambdas, distanceCompliance);
-		SolveVolumeConstraint(volumeLambda, volumeCompliance);
+		if (m_useDistanceConstraints)
+			SolveDistanceConstraints(distanceLambdas, distanceCompliance);
+		if (m_useVolumeConstraint)
+			SolveVolumeConstraint(volumeLambda, volumeCompliance);
 	}
 
 	// Solve the ground constraints
@@ -107,6 +109,36 @@ void SoftBodySimulator::SetInverseDistanceStiffness(float inverseDistanceStiffne
 float SoftBodySimulator::GetInverseDistanceStiffness() const
 {
 	return m_inverseDistanceStiffness;
+}
+
+bool SoftBodySimulator::UseDistanceConstraints() const
+{
+	return m_useDistanceConstraints;
+}
+
+void SoftBodySimulator::SetUseDistanceConstraints(bool useDistanceConstraints)
+{
+	m_useDistanceConstraints = useDistanceConstraints;
+}
+
+void SoftBodySimulator::SetInverseVolumeStiffness(float inverseVolumeStiffness)
+{
+	m_inverseVolumeStiffness = inverseVolumeStiffness;
+}
+
+float SoftBodySimulator::GetInverseVolumeStiffness() const
+{
+	return m_inverseVolumeStiffness;
+}
+
+bool SoftBodySimulator::UseVolumeConstraint() const
+{
+	return m_useVolumeConstraint;
+}
+
+void SoftBodySimulator::SetUseVolumeConstraints(bool useVolumeConstraint)
+{
+	m_useVolumeConstraint = useVolumeConstraint;
 }
 
 void SoftBodySimulator::Reset()

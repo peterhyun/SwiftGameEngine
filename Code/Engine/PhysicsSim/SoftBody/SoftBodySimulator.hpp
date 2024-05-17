@@ -19,6 +19,13 @@ public:
 	//Getter Setter for distance constraint
 	void SetInverseDistanceStiffness(float inverseDistanceStiffness);
 	float GetInverseDistanceStiffness() const;
+	bool UseDistanceConstraints() const;
+	void SetUseDistanceConstraints(bool useDistanceConstraints);
+	//Getter Setter for volume constraint
+	void SetInverseVolumeStiffness(float inverseVolumeStiffness);
+	float GetInverseVolumeStiffness() const;
+	bool UseVolumeConstraint() const;
+	void SetUseVolumeConstraints(bool useVolumeConstraint);
 
 	void Reset();
 
@@ -42,4 +49,7 @@ private:
 
 	//Volume Constraint related
 	float m_inverseVolumeStiffness = 0.0010f;
+
+	bool m_useDistanceConstraints = true;
+	bool m_useVolumeConstraint = true;
 };
