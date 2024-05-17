@@ -61,6 +61,8 @@ public:
 	float GetPressure() const;
 	void SetPressure(float pressure);
 
+	float GetInitialVolume() const;
+
 private:
 	void UpdateVertices(class Renderer& renderer);
 	void Reset();

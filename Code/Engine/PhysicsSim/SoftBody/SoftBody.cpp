@@ -35,6 +35,11 @@ void SoftBody::SetPressure(float pressure)
 	m_pressure = pressure;
 }
 
+float SoftBody::GetInitialVolume() const
+{
+	return m_initialVolume;
+}
+
 void SoftBody::UpdateVertices(Renderer& renderer)
 {
 	for (int i = 0; i < m_vertsToParticlesMap.size(); i++) {
