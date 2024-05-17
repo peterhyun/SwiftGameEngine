@@ -63,6 +63,9 @@ public:
 
 	float GetInitialVolume() const;
 
+	size_t GetNumTriangles() const;
+	size_t GetNumEdges() const;
+
 private:
 	void UpdateVertices(class Renderer& renderer);
 	void Reset();

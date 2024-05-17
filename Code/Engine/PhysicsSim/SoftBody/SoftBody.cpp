@@ -40,6 +40,16 @@ float SoftBody::GetInitialVolume() const
 	return m_initialVolume;
 }
 
+size_t SoftBody::GetNumTriangles() const
+{
+	return m_triangles.size();
+}
+
+size_t SoftBody::GetNumEdges() const
+{
+	return m_edges.size();
+}
+
 void SoftBody::UpdateVertices(Renderer& renderer)
 {
 	for (int i = 0; i < m_vertsToParticlesMap.size(); i++) {
