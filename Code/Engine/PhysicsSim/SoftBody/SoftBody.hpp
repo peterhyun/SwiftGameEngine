@@ -10,7 +10,7 @@ class Shader;
 struct SoftBodyEdge {
 public:
 	unsigned int m_positionIndices[2] = { 0, 0 };
-	unsigned int m_triangleIndices[2] = { 0, 0 };
+	int m_triangleIndices[2] = { -1, -1 };	//-1 if couldn't find it
 
 	double m_initialLength = 0.0f;
 
@@ -19,11 +19,13 @@ public:
 			((m_positionIndices[0] == other.m_positionIndices[0] && m_positionIndices[1] == other.m_positionIndices[1]) ||
 				(m_positionIndices[0] == other.m_positionIndices[1] && m_positionIndices[1] == other.m_positionIndices[0]));
 
+		/*
 		bool triangleMatch =
 			((m_triangleIndices[0] == other.m_triangleIndices[0] && m_triangleIndices[1] == other.m_triangleIndices[1]) ||
 				(m_triangleIndices[0] == other.m_triangleIndices[1] && m_triangleIndices[1] == other.m_triangleIndices[0]));
+		*/
 
-		return positionMatch && triangleMatch;
+		return positionMatch; //&& triangleMatch;
 	}
 };
 
