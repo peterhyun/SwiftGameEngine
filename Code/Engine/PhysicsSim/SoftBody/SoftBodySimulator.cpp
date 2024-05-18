@@ -38,13 +38,12 @@ void SoftBodySimulator::Update()
 			SolveDistanceConstraints(distanceLambdas, distanceCompliance);
 		if (m_useVolumeConstraint)
 			SolveVolumeConstraint(volumeLambda, volumeCompliance);
-	}
-
-	// Solve the ground constraints
-	for (int particleIdx = 0; particleIdx < m_softBody.m_positions.size(); particleIdx++) {
-		Vec3& pos = m_softBody.m_positions[particleIdx];
-		if (pos.z < 0.0f) {
-			pos.z = 0.0f;
+		// Solve the ground constraints
+		for (int particleIdx = 0; particleIdx < m_softBody.m_positions.size(); particleIdx++) {
+			Vec3& pos = m_softBody.m_positions[particleIdx];
+			if (pos.z < 0.0f) {
+				pos.z = 0.0f;
+			}
 		}
 	}
 
