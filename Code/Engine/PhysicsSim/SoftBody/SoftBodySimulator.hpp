@@ -29,6 +29,9 @@ public:
 
 	void Reset();
 
+	float GetParticleWeights() const;
+	void SetParticleWeights(float particleWeights);
+
 private:
 	inline float GetDistanceConstraint(const Vec3& pos1, const Vec3& pos2, float originalDist) const;
 	inline Vec3 GetDistanceConstraintPartialDerivativePos1(const Vec3& pos1, const Vec3& pos2) const;

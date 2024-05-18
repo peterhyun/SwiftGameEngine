@@ -256,7 +256,6 @@ void OBJLoader::ParseFileToSoftBody(const std::string& filePath, const Mat44& tr
 
 	GUARANTEE_OR_DIE(out_softBody.m_vertsToParticlesMap.size() == out_softBody.m_verts.size(), "Check logic");
 	
-	out_softBody.m_velocities.resize(out_softBody.m_positions.size());
 	//Populate m_edges
 	for (int triangleIdx = 0; triangleIdx < out_softBody.m_triangles.size(); triangleIdx++) {
 		const SoftBodyTriangle& currentTriangle = out_softBody.m_triangles[triangleIdx];
@@ -318,6 +317,12 @@ void OBJLoader::ParseFileToSoftBody(const std::string& filePath, const Mat44& tr
 
 	//Copy over the position data
 	out_softBody.m_initialPositions = out_softBody.m_positions;
+	out_softBody.m_velocities.resize(out_softBody.m_positions.size());
+	out_softBody.m_weights.resize(out_softBody.m_positions.size());
+	//Each particle weight defaults to 1.0f
+	for (float& weight : out_softBody.m_weights) {
+		weight = 1.0f;
+	}
 
 	//Calculate volume of mesh
 	out_softBody.m_initialVolume = out_softBody.CalculateVolume();

@@ -73,9 +73,11 @@ private:
 	void Reset();
 
 private:
+	//All these following 4 variables have to have the same length!
 	std::vector<Vec3> m_positions;
 	std::vector<Vec3> m_initialPositions;
 	std::vector<Vec3> m_velocities;
+	std::vector<float> m_weights;
 
 	std::vector<SoftBodyTriangle> m_triangles;
 	std::vector<SoftBodyEdge> m_edges;

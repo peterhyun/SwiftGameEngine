@@ -6,7 +6,10 @@
 
 SoftBodySimulator::SoftBodySimulator(SoftBody& body, Renderer& renderer) : m_softBody(body), m_renderer(renderer)
 {
-	GUARANTEE_OR_DIE(m_softBody.m_positions.size() == m_softBody.m_velocities.size(), "Soft Body Initialization is wrong!");
+	GUARANTEE_OR_DIE(
+		m_softBody.m_positions.size() == m_softBody.m_velocities.size() && m_softBody.m_positions.size() == m_softBody.m_initialPositions.size() && m_softBody.m_positions.size() == m_softBody.m_weights.size(), 
+		"Soft Body Initialization is wrong!"
+	);
 }
 
 void SoftBodySimulator::Update()
@@ -144,6 +147,19 @@ void SoftBodySimulator::SetUseVolumeConstraints(bool useVolumeConstraint)
 void SoftBodySimulator::Reset()
 {
 	m_softBody.Reset();
+}
+
+float SoftBodySimulator::GetParticleWeights() const
+{
+	return m_softBody.m_weights[0];
+}
+
+void SoftBodySimulator::SetParticleWeights(float particleWeights)
+{
+	GUARANTEE_OR_DIE(particleWeights > 0.0f, "particleWeights <= 0.0f");
+	for (float& weight : m_softBody.m_weights) {
+		weight = particleWeights;
+	}
 }
 
 inline float SoftBodySimulator::GetDistanceConstraint(const Vec3& pos1, const Vec3& pos2, float originalDist) const
