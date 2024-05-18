@@ -157,8 +157,10 @@ float SoftBodySimulator::GetParticleWeights() const
 void SoftBodySimulator::SetParticleWeights(float particleWeights)
 {
 	GUARANTEE_OR_DIE(particleWeights > 0.0f, "particleWeights <= 0.0f");
-	for (float& weight : m_softBody.m_weights) {
-		weight = particleWeights;
+	float inv_particleWeights = 1.0f / particleWeights;
+	for (int i = 0; i < m_softBody.m_weights.size(); i++) {
+		m_softBody.m_weights[i] = particleWeights;
+		m_softBody.m_invWeights[i] = inv_particleWeights;
 	}
 }
 
@@ -184,7 +186,9 @@ inline float SoftBodySimulator::GetVolumeConstraint() const
 	if (volumeConstraint == 0.0f) {
 		return;
 	}
-	std::vector<Vec3> constraintPDs(m_softBody.m_positions.size(), Vec3());	//Partial derivatives of each Jj
+
+	//Calculate the partial derivatives of each particle
+	std::vector<Vec3> constraintPDs(m_softBody.m_positions.size(), Vec3());
 	float inv_6 = 1.0f / 6.0f;
 	for (const auto& triangles : m_softBody.m_triangles) {
 		int idx0 = triangles.m_positionIndices[0];
@@ -200,15 +204,17 @@ inline float SoftBodySimulator::GetVolumeConstraint() const
 		constraintPDs[idx2] += CrossProduct3D(pos0, pos1) * inv_6;
 	}
 
+
 	float denominator = compliance;
-	for (const Vec3& pd : constraintPDs) {
-		denominator += pd.GetLengthSquared();
+	for (int i = 0; i < m_softBody.m_positions.size(); i++) {
+		const Vec3& pd = constraintPDs[i];
+		denominator += m_softBody.m_invWeights[i] * pd.GetLengthSquared();
 	}
 
 	float deltaLambda = -(volumeConstraint + compliance * volumeLambda) / denominator;
 	for (int i = 0; i < m_softBody.m_positions.size(); i++) {
 		Vec3& pos = m_softBody.m_positions[i];
-		pos += constraintPDs[i] * deltaLambda;
+		pos += m_softBody.m_invWeights[i] * constraintPDs[i] * deltaLambda;
 	}
 	volumeLambda += deltaLambda;
 }
@@ -228,12 +234,12 @@ void SoftBodySimulator::SolveDistanceConstraints(std::vector<float>& lambdas, fl
 		Vec3 gradC1 = GetDistanceConstraintPartialDerivativePos1(pos1, pos2);
 		Vec3 gradC2 = -gradC1;
 
-		float effectiveMass = 1.0f + 1.0f; // Assuming mass = 1 for both particles
+		float effectiveMass = m_softBody.m_invWeights[idx1] + m_softBody.m_invWeights[idx2];
 		float denom = effectiveMass + compliance;
 		float deltaLambda = -(distanceConstraint + compliance * lambdas[edgeIdx]) / denom;
 
-		pos1 += deltaLambda * gradC1;
-		pos2 += deltaLambda * gradC2;
+		pos1 += m_softBody.m_invWeights[idx1] * deltaLambda * gradC1;
+		pos2 += m_softBody.m_invWeights[idx2] * deltaLambda * gradC2;
 
 		lambdas[edgeIdx] += deltaLambda;
 	}

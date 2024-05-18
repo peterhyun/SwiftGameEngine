@@ -319,9 +319,11 @@ void OBJLoader::ParseFileToSoftBody(const std::string& filePath, const Mat44& tr
 	out_softBody.m_initialPositions = out_softBody.m_positions;
 	out_softBody.m_velocities.resize(out_softBody.m_positions.size());
 	out_softBody.m_weights.resize(out_softBody.m_positions.size());
+	out_softBody.m_invWeights.resize(out_softBody.m_positions.size());
 	//Each particle weight defaults to 1.0f
-	for (float& weight : out_softBody.m_weights) {
-		weight = 1.0f;
+	for (int i = 0; i < out_softBody.m_positions.size(); i++) {
+		out_softBody.m_weights[i] = 1.0f;
+		out_softBody.m_invWeights[i] = 1.0f;
 	}
 
 	//Calculate volume of mesh

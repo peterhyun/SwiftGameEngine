@@ -78,6 +78,7 @@ private:
 	std::vector<Vec3> m_initialPositions;
 	std::vector<Vec3> m_velocities;
 	std::vector<float> m_weights;
+	std::vector<float> m_invWeights;	//Cached 1.0f/m_weights
 
 	std::vector<SoftBodyTriangle> m_triangles;
 	std::vector<SoftBodyEdge> m_edges;
