@@ -16,6 +16,9 @@ public:
 	float GetTimeStep() const;
 	void SetSolverIterations(unsigned int solverIterations);
 	unsigned int GetSolverIterations() const;
+	void SetSolverSubsteps(unsigned int solverSubsteps);
+	unsigned int GetSolverSubsteps() const;
+
 	//Getter Setter for distance constraint
 	void SetInverseDistanceStiffness(float inverseDistanceStiffness);
 	float GetInverseDistanceStiffness() const;
@@ -43,8 +46,10 @@ private:
 private:
 	Renderer& m_renderer;
 	SoftBody& m_softBody;
-	float m_timeStep = 0.002f;
+	float m_timeStep = 0.02f;
+
 	unsigned int m_solverIterations = 30;
+	unsigned int m_solverSubsteps = 10;
 
 	//Distance Constraint related
 	float m_inverseDistanceStiffness = 0.0010f;
