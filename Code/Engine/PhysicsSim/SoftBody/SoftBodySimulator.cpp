@@ -14,53 +14,49 @@ SoftBodySimulator::SoftBodySimulator(SoftBody& body, Renderer& renderer) : m_sof
 
 void SoftBodySimulator::Update()
 {
+	float timeStepSquare = m_timeStep * m_timeStep;
 	const Vec3 gravity(0.0f, 0.0f, -9.8f * 0.05f);
 
-	const float substeppedTimeStep = m_timeStep / float(m_solverSubsteps);
-	const float substeppedTimeStepSquare = substeppedTimeStep * substeppedTimeStep;
+	std::vector<Vec3> prevPositions = m_softBody.m_positions;
 
-	for (unsigned int substepIdx = 0; substepIdx < m_solverSubsteps; substepIdx++) {
-		std::vector<Vec3> prevPositions = m_softBody.m_positions;
+	//Do the whole solving thing here
+	//1. Predict position
+	for (int particleIdx = 0; particleIdx < m_softBody.m_positions.size(); particleIdx++) {
+		Vec3& particlePos = m_softBody.m_positions[particleIdx];
+		particlePos += m_timeStep * m_softBody.m_velocities[particleIdx] + timeStepSquare * gravity;	//Applying external force: gravity
+	}
 
-		//Do the whole solving thing here
-		//1. Predict position
+	//2. Initialize solve and multipliers
+	std::vector<float> distanceLambdas(m_softBody.m_edges.size(), 0.0f);
+	const float distanceCompliance = m_inverseDistanceStiffness / (timeStepSquare);
+	float volumeLambda = 0.0f;
+	const float volumeCompliance = m_inverseVolumeStiffness / (timeStepSquare);
+
+	//3. Solver iterations
+	for (unsigned int solverIter = 0; solverIter < m_solverIterations; solverIter++) {
+		if (m_useDistanceConstraints)
+			SolveDistanceConstraints(distanceLambdas, distanceCompliance);
+		if (m_useVolumeConstraint)
+			SolveVolumeConstraint(volumeLambda, volumeCompliance);
+		// Solve the ground constraints
 		for (int particleIdx = 0; particleIdx < m_softBody.m_positions.size(); particleIdx++) {
-			Vec3& particlePos = m_softBody.m_positions[particleIdx];
-			particlePos += substeppedTimeStep * m_softBody.m_velocities[particleIdx] + substeppedTimeStepSquare * gravity;	//Applying external force: gravity
-		}
-
-		//2. Initialize solve and multipliers
-		std::vector<float> distanceLambdas(m_softBody.m_edges.size(), 0.0f);
-		const float distanceCompliance = m_inverseDistanceStiffness / (substeppedTimeStepSquare);
-		float volumeLambda = 0.0f;
-		const float volumeCompliance = m_inverseVolumeStiffness / (substeppedTimeStepSquare);
-
-		for (unsigned int solverIter = 0; solverIter < m_solverIterations; solverIter++) {
-			//3. Solver iterations
-			if (m_useDistanceConstraints)
-				SolveDistanceConstraints(distanceLambdas, distanceCompliance);
-			if (m_useVolumeConstraint)
-				SolveVolumeConstraint(volumeLambda, volumeCompliance);
-			// Solve the ground constraints
-			for (int particleIdx = 0; particleIdx < m_softBody.m_positions.size(); particleIdx++) {
-				Vec3& pos = m_softBody.m_positions[particleIdx];
-				if (pos.z < 0.0f) {
-					pos.z = 0.0f;
-				}
+			Vec3& pos = m_softBody.m_positions[particleIdx];
+			if (pos.z < 0.0f) {
+				pos.z = 0.0f;
 			}
 		}
+	}
 
-		//Update velocities
-		for (int particleIdx = 0; particleIdx < m_softBody.m_positions.size(); particleIdx++) {
-			Vec3 newVelocity = (m_softBody.m_positions[particleIdx] - prevPositions[particleIdx]) / substeppedTimeStep;
-
-			//Add some damping to the horizontal velocities
-			if (m_softBody.m_positions[particleIdx].z == 0.0f) {
-				newVelocity *= 0.9f;
-			}
-
-			m_softBody.m_velocities[particleIdx] = newVelocity;
+	//Update velocities
+	for (int particleIdx = 0; particleIdx < m_softBody.m_positions.size(); particleIdx++) {
+		Vec3 newVelocity = (m_softBody.m_positions[particleIdx] - prevPositions[particleIdx]) / m_timeStep;
+		
+		//Add some damping to the horizontal velocities
+		if (m_softBody.m_positions[particleIdx].z == 0.0f) {
+			newVelocity *= 0.9f;
 		}
+
+		m_softBody.m_velocities[particleIdx] = newVelocity;
 	}
 
 	m_softBody.UpdateVertices(m_renderer);
@@ -98,24 +94,12 @@ float SoftBodySimulator::GetTimeStep() const
 
 void SoftBodySimulator::SetSolverIterations(unsigned int solverIterations)
 {
-	GUARANTEE_OR_DIE(solverIterations > 0, "solverIterations == 0");
 	m_solverIterations = solverIterations;
 }
 
 unsigned int SoftBodySimulator::GetSolverIterations() const
 {
 	return m_solverIterations;
-}
-
-void SoftBodySimulator::SetSolverSubsteps(unsigned int solverSubsteps)
-{
-	GUARANTEE_OR_DIE(solverSubsteps > 0, "solverSubstep == 0");
-	m_solverSubsteps = solverSubsteps;
-}
-
-unsigned int SoftBodySimulator::GetSolverSubsteps() const
-{
-	return m_solverSubsteps;
 }
 
 void SoftBodySimulator::SetInverseDistanceStiffness(float inverseDistanceStiffness)
