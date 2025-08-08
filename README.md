@@ -1,2 +1,2 @@
 Visit my website: https://peterhyun1989.wordpress.com/
-To see how I used my custom engine for all my game projects.
+to see how I used my custom engine for all my game projects.
